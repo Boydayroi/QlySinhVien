@@ -23,7 +23,7 @@ if (!$reset) {
         $confirm_password = $_POST['confirm_password'] ?? '';
         
         if ($password !== $confirm_password) {
-            $error = 'Passwords do not match';
+            $error = 'Mật khẩu xác nhận không khớp!';
         } else {
             // Update password cho user
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -34,7 +34,7 @@ if (!$reset) {
             $stmt = $conn->prepare("DELETE FROM password_resets WHERE email = ?");
             $stmt->execute([$email]);
             
-            $success = 'Password has been reset successfully. You can now login with your new password.';
+            $success = 'Đặt lại mật khẩu thành công!';
         }
     }
 }
@@ -164,40 +164,28 @@ if (!$reset) {
 }
 </style>
 
-<div class="reset-password-container">
-    <div class="reset-password-form">
-        <h2>Reset Password</h2>
+<div class="container center-content" style="min-height:70vh;">
+    <div class="form-container fade-in" style="width:100%; max-width:400px;">
+        <h2 class="mb-3 text-center">Đặt lại mật khẩu</h2>
         <?php if ($error): ?>
-            <div class="error"><?php echo $error; ?></div>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
         <?php if ($success): ?>
-            <div class="success"><?php echo $success; ?></div>
+            <div class="alert alert-success"><?php echo $success; ?></div>
         <?php endif; ?>
-        
-        <?php if (empty($error) && empty($success)): ?>
-            <form method="POST" action="" id="resetForm">
-                <div class="form-group">
-                    <label for="password">New Password</label>
-                    <input type="password" id="password" name="password" class="form-control" required>
-                    <div class="password-requirements">
-                        Password must be at least 8 characters long
-                    </div>
-                    <div class="password-strength">
-                        <div class="password-strength-bar" id="strengthBar"></div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="confirm_password">Confirm New Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
-                </div>
-                
-                <button type="submit" class="btn-primary">Reset Password</button>
-            </form>
-        <?php endif; ?>
-        
-        <div class="links">
-            <a href="login.php">Back to Login</a>
+        <form method="POST" action="" autocomplete="off">
+            <div class="form-group">
+                <label for="password">Mật khẩu mới</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Xác nhận mật khẩu mới</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-block mt-2">Đặt lại mật khẩu</button>
+        </form>
+        <div class="links mt-3 text-center">
+            <a href="login.php">Quay lại đăng nhập</a>
         </div>
     </div>
 </div>

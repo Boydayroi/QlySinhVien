@@ -29,8 +29,8 @@ $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $full_name = $_POST['full_name'] ?? '';
-    $student_id = $_POST['student_id'] ?? '';
-    $date_of_birth = $_POST['date_of_birth'] ?? null;
+    $student_code = $_POST['student_code'] ?? '';
+    $dob = $_POST['dob'] ?? null;
     $gender = $_POST['gender'] ?? null;
     $address = $_POST['address'] ?? null;
     $phone = $_POST['phone'] ?? null;
@@ -49,22 +49,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Đổi mật khẩu nếu có nhập
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
+    $change_password_ok = true;
     if (!empty($password)) {
         if ($password !== $confirm_password) {
-            $error = 'Passwords do not match';
+            $error = 'Mật khẩu xác nhận không khớp!';
+            $change_password_ok = false;
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
             $stmt->execute([$hashed_password, $user_id]);
+            $success = 'Đổi mật khẩu thành công!';
         }
     }
 
-    if (empty($error)) {
-        // Update thông tin sinh viên
-        $stmt = $conn->prepare("UPDATE students SET full_name = ?, student_id = ?, date_of_birth = ?, gender = ?, address = ?, phone = ?, avatar = ? WHERE user_id = ?");
-        $stmt->execute([$full_name, $student_id, $date_of_birth, $gender, $address, $phone, $avatar, $user_id]);
-        $success = 'Profile updated successfully.';
-
+    // Chỉ update thông tin cá nhân nếu không có lỗi đổi mật khẩu
+    if ($change_password_ok) {
+        $stmt = $conn->prepare("UPDATE students SET full_name = ?, student_code = ?, dob = ?, gender = ?, address = ?, phone = ?, avatar = ? WHERE user_id = ?");
+        $stmt->execute([$full_name, $student_code, $dob, $gender, $address, $phone, $avatar, $user_id]);
+        if (empty($success)) $success = 'Cập nhật thông tin thành công!';
         // Lấy lại dữ liệu mới nhất từ DB
         $stmt = $conn->prepare("SELECT u.username, u.email, s.* FROM users u LEFT JOIN students s ON u.id = s.user_id WHERE u.id = ?");
         $stmt->execute([$user_id]);
@@ -72,67 +74,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
-<div class="container">
-    <div class="form-container">
-        <h2 class="form-title">Your Profile</h2>
+<div class="container center-content" style="min-height:70vh;">
+    <div class="form-container fade-in" style="max-width:500px;">
+        <h2 class="mb-3 text-center">Thông tin cá nhân</h2>
         <?php if ($error): ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
         <?php if ($success): ?>
             <div class="alert alert-success"><?php echo $success; ?></div>
         <?php endif; ?>
-        <form method="POST" action="" enctype="multipart/form-data">
-            <div style="text-align:center;margin-bottom:1rem;">
-                <img src="<?php echo $student['avatar'] ? $student['avatar'] : 'uploads/avatars/default.png'; ?>"
-                     alt="Avatar"
-                     style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid #3498db;">
+        <form method="POST" action="" enctype="multipart/form-data" autocomplete="off">
+            <div style="text-align:center;margin-bottom:1.2rem;">
+                <div class="avatar-upload-wrap" style="display:inline-block;">
+                    <img src="<?php echo $student['avatar'] ? $student['avatar'] : 'asset/default-avatar.png'; ?>" alt="Avatar" />
+                    <input type="file" id="avatar" name="avatar" accept="image/*" style="margin-top:0.5rem;">
+                </div>
             </div>
             <div class="form-group">
-                <label for="full_name">Full Name:</label>
-                <input type="text" id="full_name" name="full_name" class="form-control" value="<?php echo htmlspecialchars($student['full_name']); ?>" required>
+                <label for="full_name">Họ và tên</label>
+                <input type="text" id="full_name" name="full_name" class="form-control" value="<?php echo htmlspecialchars($student['full_name'] ?? ''); ?>" required>
             </div>
             <div class="form-group">
-                <label for="student_id">Student ID:</label>
-                <input type="text" id="student_id" name="student_id" class="form-control" value="<?php echo htmlspecialchars($student['student_id']); ?>" required>
+                <label for="student_code">Mã sinh viên</label>
+                <input type="text" id="student_code" name="student_code" class="form-control" value="<?php echo htmlspecialchars($student['student_code'] ?? ''); ?>" required>
             </div>
             <div class="form-group">
-                <label for="date_of_birth">Date of Birth:</label>
-                <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" value="<?php echo htmlspecialchars($student['date_of_birth'] ?? ''); ?>">
+                <label for="dob">Ngày sinh</label>
+                <input type="date" id="dob" name="dob" class="form-control" value="<?php echo htmlspecialchars($student['dob'] ?? ''); ?>">
             </div>
             <div class="form-group">
-                <label for="gender">Gender:</label>
+                <label for="gender">Giới tính</label>
                 <select id="gender" name="gender" class="form-control">
-                    <option value="">Select</option>
-                    <option value="male" <?php if(($student['gender'] ?? '')=='male') echo 'selected'; ?>>Male</option>
-                    <option value="female" <?php if(($student['gender'] ?? '')=='female') echo 'selected'; ?>>Female</option>
-                    <option value="other" <?php if(($student['gender'] ?? '')=='other') echo 'selected'; ?>>Other</option>
+                    <option value="">Chọn</option>
+                    <option value="male" <?php if(($student['gender'] ?? '')=='male') echo 'selected'; ?>>Nam</option>
+                    <option value="female" <?php if(($student['gender'] ?? '')=='female') echo 'selected'; ?>>Nữ</option>
+                    <option value="other" <?php if(($student['gender'] ?? '')=='other') echo 'selected'; ?>>Khác</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="address">Address:</label>
+                <label for="address">Địa chỉ</label>
                 <input type="text" id="address" name="address" class="form-control" value="<?php echo htmlspecialchars($student['address'] ?? ''); ?>">
             </div>
             <div class="form-group">
-                <label for="phone">Phone:</label>
+                <label for="phone">Số điện thoại</label>
                 <input type="text" id="phone" name="phone" class="form-control" value="<?php echo htmlspecialchars($student['phone'] ?? ''); ?>">
-            </div>
-            <div class="form-group">
-                <label for="avatar">Avatar:</label>
-                <input type="file" id="avatar" name="avatar" class="form-control" accept="image/*">
             </div>
             <hr>
             <div class="form-group">
-                <label for="password">New Password:</label>
+                <label for="password">Mật khẩu mới</label>
                 <input type="password" id="password" name="password" class="form-control">
             </div>
             <div class="form-group">
-                <label for="confirm_password">Confirm New Password:</label>
+                <label for="confirm_password">Xác nhận mật khẩu mới</label>
                 <input type="password" id="confirm_password" name="confirm_password" class="form-control">
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Update Profile</button>
+            <button type="submit" class="btn btn-block mt-2">Cập nhật</button>
         </form>
     </div>
 </div>
-
 <?php require_once 'footer.php'; ?>

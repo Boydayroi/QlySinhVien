@@ -63,29 +63,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<div class="container">
-    <div class="forgot-password-form">
-        <h2>Forgot Password</h2>
+<div class="container center-content" style="min-height:70vh;">
+    <div class="form-container fade-in" style="width:100%; max-width:400px;">
+        <h2 class="mb-3 text-center">Quên mật khẩu</h2>
         <?php if ($error): ?>
-            <div class="error"><?php echo $error; ?></div>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
         <?php if ($success): ?>
-            <div class="success"><?php echo $success; ?></div>
+            <div class="alert alert-success"><?php echo $success; ?></div>
         <?php endif; ?>
-        
-        <form method="POST" action="">
+        <form method="POST" action="" autocomplete="off">
             <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" required>
             </div>
-            
             <div class="g-recaptcha" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>"></div>
-            
-            <button type="submit">Send Reset Link</button>
+            <button type="submit" class="btn btn-block mt-2">Gửi yêu cầu</button>
         </form>
-        
-        <div class="links">
-            <a href="login.php">Back to Login</a>
+        <div class="links mt-3 text-center">
+            <a href="login.php">Quay lại đăng nhập</a>
         </div>
     </div>
 </div>

@@ -8,7 +8,7 @@ if (isLoggedIn()) {
 ?>
 
 <div class="container">
-    <div class="welcome-section">
+    <div class="welcome-section home-content">
         <h1>Welcome to Student Management System</h1>
         <p>A comprehensive system for managing student information and academic records.</p>
         

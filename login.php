@@ -48,32 +48,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<div class="container">
-    <div class="login-form">
-        <h2>Login</h2>
+<div class="container center-content" style="min-height:70vh;">
+    <div class="form-container fade-in" style="width:100%; max-width:400px;">
+        <h2 class="mb-3 text-center">Đăng nhập</h2>
         <?php if ($error): ?>
-            <div class="error"><?php echo $error; ?></div>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
-        
-        <form method="POST" action="">
+        <form method="POST" action="" autocomplete="off">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="username">Tên đăng nhập</label>
+                <input type="text" id="username" name="username" class="form-control" required>
             </div>
-            
             <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" name="password" class="form-control" required>
             </div>
-            
-            <div class="g-recaptcha" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>"></div>
-            
-            <button type="submit">Login</button>
+            <div class="g-recaptcha mb-3" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>"></div>
+            <button type="submit" class="btn btn-block mt-2">Đăng nhập</button>
         </form>
-        
-        <div class="links">
-            <a href="forgot-password.php">Forgot Password?</a>
-            <a href="register.php">Register</a>
+        <div class="links mt-3 text-center">
+            <a href="forgot-password.php">Quên mật khẩu?</a>
+            <a href="register.php">Đăng ký</a>
         </div>
     </div>
 </div>

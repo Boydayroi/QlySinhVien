@@ -1,0 +1,20 @@
+# IDE files
+.vscode/
+.idea/
+
+# Environment files
+.env
+config.php
+
+# Uploaded files
+uploads/
+
+# Logs
+*.log
+
+# Cache files
+*.cache
+
+# System files
+.DS_Store
+Thumbs.db 
